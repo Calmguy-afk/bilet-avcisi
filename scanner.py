@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 NTFY_KANALI = "ucuz_bilet"  # <-- Kendi ntfy kanal adını buraya yaz!
 
 # Telefondan girdiğin ayarları otomatik alır (Girmezsen varsayılanları kullanır)
-MAKSIMUM_FIYAT = int(os.environ.get("MAX_FIYAT", 2000))
+MAKSIMUM_FIYAT = int(os.environ.get("MAX_FIYAT", 7000))
 KALKIS_LISTESI = [x.strip() for x in os.environ.get("KALKIS_YERLERI", "SAW,IST,ESB,ASR").split(",")]
 UCUS_TIPI = os.environ.get("UCUS_TIPI", "hepsi") # hepsi, gidis_donus, tek_yon
 TARANACAK_AY_SAYISI = int(os.environ.get("AY_SAYISI", 6))
