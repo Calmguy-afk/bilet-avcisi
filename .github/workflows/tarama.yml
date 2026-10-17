@@ -2,8 +2,8 @@ name: 7-24 Bilet Kombinasyon Tarayici
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Her 30 dakikada bir otomatik tarar
-  workflow_dispatch:       # Telefondan girdiğinde sana bu ayar kutularını gösterir:
+    - cron: '*/15 * * * *' # Her 15 dakikada bir 7/24 otomatik tarar
+  workflow_dispatch:
     inputs:
       max_fiyat:
         description: 'Maksimum Fiyat Limiti (TL)'
@@ -26,17 +26,19 @@ jobs:
   tara:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Python Kur
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Kutuphaneleri Yukle
-        run: pip install requests
-      - name: Kombinasyonlari Tara ve Bildirim At
+      - name: Dosyalari Cek
+        run: |
+          git init
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git fetch --depth 1 origin main
+          git checkout FETCH_HEAD
+
+      - name: Kutuphaneleri Yukle ve Kombinasyonlari Tara
         env:
           MAX_FIYAT: ${{ github.event.inputs.max_fiyat || '2000' }}
           KALKIS_YERLERI: ${{ github.event.inputs.kalkis || 'SAW,IST,ESB,ASR' }}
           UCUS_TIPI: ${{ github.event.inputs.ucus_tipi || 'hepsi' }}
           AY_SAYISI: ${{ github.event.inputs.ay_sayisi || '6' }}
-        run: python scanner.py
+        run: |
+          pip install requests
+          python3 scanner.py
