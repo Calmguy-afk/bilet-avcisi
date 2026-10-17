@@ -2,8 +2,25 @@ name: 7-24 Bilet Kombinasyon Tarayici
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
-  workflow_dispatch:
+    - cron: '*/30 * * * *' # Her 30 dakikada bir otomatik tarar
+  workflow_dispatch:       # Telefondan girdiğinde sana bu ayar kutularını gösterir:
+    inputs:
+      max_fiyat:
+        description: 'Maksimum Fiyat Limiti (TL)'
+        required: true
+        default: '2000'
+      kalkis:
+        description: 'Kalkis (SAW,IST,ESB,ASR)'
+        required: true
+        default: 'SAW,IST,ESB,ASR'
+      ucus_tipi:
+        description: 'Tip: hepsi / gidis_donus / tek_yon'
+        required: true
+        default: 'hepsi'
+      ay_sayisi:
+        description: 'Kac Ay İlerisi Taransin? (1-12)'
+        required: true
+        default: '6'
 
 jobs:
   tara:
@@ -15,6 +32,11 @@ jobs:
         with:
           python-version: '3.11'
       - name: Kutuphaneleri Yukle
-        run: pip install requests beautifulsoup4
+        run: pip install requests
       - name: Kombinasyonlari Tara ve Bildirim At
+        env:
+          MAX_FIYAT: ${{ github.event.inputs.max_fiyat || '2000' }}
+          KALKIS_YERLERI: ${{ github.event.inputs.kalkis || 'SAW,IST,ESB,ASR' }}
+          UCUS_TIPI: ${{ github.event.inputs.ucus_tipi || 'hepsi' }}
+          AY_SAYISI: ${{ github.event.inputs.ay_sayisi || '6' }}
         run: python scanner.py
