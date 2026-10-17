@@ -73,12 +73,6 @@ def kombinasyonlari_tara():
                 f"Google Flights'ta gormek icin bildirime tikla."
             )
             bildirim_gonder(f"UCUZ BILET: {varis_isim} {fiyat} TL!", mesaj, link)
-    else:
-        # Sistemin hatasız çalıştığını görmen için bilgi mesajı:
-        bildirim_gonder(
-            "Tarama Tamamlandi (Hatasiz!)",
-            f"Tum Avrupa kombinasyonlari tarandi. Su an {MAKSIMUM_FIYAT} TL altinda bilet yok, 30 dk sonra tekrar bakilacak."
-        )
 
 if __name__ == "__main__":
     kombinasyonlari_tara()
