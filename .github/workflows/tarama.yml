@@ -1,0 +1,22 @@
+name: 7-24 Bilet Kombinasyon Tarayici
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # Her 10 dakikada bir 7/24 otomatik çalışır
+  workflow_dispatch:       # İstediğin an tek tuşla manuel çalıştırmanı sağlar
+
+jobs:
+  tara:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python Kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Kutuphaneleri Yukle
+        run: pip install requests
+      - name: Kombinasyonlari Tara ve Bildirim At
+        env:
+          TEQUILA_API_KEY: ${{ secrets.TEQUILA_API_KEY }}
+        run: python scanner.py
