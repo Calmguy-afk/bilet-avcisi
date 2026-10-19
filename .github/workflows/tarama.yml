@@ -8,37 +8,21 @@ on:
       max_fiyat:
         description: 'Maksimum Fiyat Limiti (TL)'
         required: true
-        default: '2000'
-      kalkis:
-        description: 'Kalkis (SAW,IST,ESB,ASR)'
-        required: true
-        default: 'SAW,IST,ESB,ASR'
+        default: '7000'
       ucus_tipi:
-        description: 'Tip: hepsi / gidis_donus / tek_yon'
+        description: 'Tip: gidis_donus / tek_yon'
         required: true
-        default: 'hepsi'
-      ay_sayisi:
-        description: 'Kac Ay İlerisi Taransin? (1-12)'
-        required: true
-        default: '6'
+        default: 'gidis_donus'
 
 jobs:
   tara:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Dosyalari Cek
-        run: |
-          git init
-          git remote add origin https://github.com/${{ github.repository }}.git
-          git fetch --depth 1 origin main
-          git checkout FETCH_HEAD
-
-      - name: Kutuphaneleri Yukle ve Kombinasyonlari Tara
+      - uses: actions/checkout@v4
+      - name: Kombinasyonlari Tara ve Bildirim At
         env:
-          MAX_FIYAT: ${{ github.event.inputs.max_fiyat || '2000' }}
-          KALKIS_YERLERI: ${{ github.event.inputs.kalkis || 'SAW,IST,ESB,ASR' }}
-          UCUS_TIPI: ${{ github.event.inputs.ucus_tipi || 'hepsi' }}
-          AY_SAYISI: ${{ github.event.inputs.ay_sayisi || '6' }}
+          MAX_FIYAT: ${{ github.event.inputs.max_fiyat || '7000' }}
+          UCUS_TIPI: ${{ github.event.inputs.ucus_tipi || 'gidis_donus' }}
         run: |
-          pip install requests
+          pip install requests --break-system-packages || pip install requests
           python3 scanner.py
