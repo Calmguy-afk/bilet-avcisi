@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timedelta
 
 # ================= SENİN AYARLARIN =================
-NTFY_KANALI = "SENIN_NTFY_KANAL_ADIN"  # <-- Kendi ntfy kanal adını buraya yaz!
+NTFY_KANALI = "ucuz_bilet"  # <-- Kendi ntfy kanal adını buraya yaz!
 
 MAKSIMUM_FIYAT = int(os.environ.get("MAX_FIYAT", 7000))
 UCUS_TIPI = os.environ.get("UCUS_TIPI", "gidis_donus") # gidis_donus veya tek_yon
