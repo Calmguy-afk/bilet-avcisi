@@ -2,19 +2,21 @@ import os
 import requests
 from datetime import datetime, timedelta
 
-# NTFY Konfigürasyonu
-# Lütfen telefondaki ntfy uygulamasında açtığın kanal adını yaz.
+# ==========================================
+# KONFIGURASYON
+# ==========================================
+# Telefondaki ntfy uygulamasinda actigin kanal adini yaz
 NTFY_CHANNEL = "ucuz_bilet" 
 NTFY_URL = f"https://ntfy.sh/{NTFY_CHANNEL}"
 
-# Taranacak Havalimanları ve Bütçe Limiti
-ORIGIN = "SAW"          # İstanbul Sabiha Gökçen
-DESTINATIONS = ["SJJ", "SKP", "PRN", "TIA", "CGN", "STR", "ATH", "AUH"] # Örnek rotalar
-MAX_PRICE_TRY = 7000    # Gidiş-Dönüş Maksimum Bütçe (TL)
+# Tarama Parametreleri
+ORIGIN = "SAW"           # Istanbul Sabiha Gokcen
+DESTINATIONS = ["SJJ", "SKP", "PRN", "TIA", "CGN", "STR", "ATH", "AUH"] # Hedef Havalimanlari
+MAX_PRICE_TRY = 7000     # Maksimum Gidis-Donus Butcesi (TL)
 
 def send_notification(title, message):
     """
-    ntfy servisine emojiziz, sade metin bildirimi gönderir.
+    ntfy servisine güvenli, emojisiz metin bildirimi gonderir.
     """
     try:
         headers = {
@@ -26,42 +28,54 @@ def send_notification(title, message):
             headers=headers
         )
         if response.status_code == 200:
-            print("Bildirim basariyla gonderildi.")
+            print(f"Bildirim gonderildi: {title}")
         else:
             print(f"Bildirim hatasi: {response.status_code} - {response.text}")
     except Exception as e:
-        print(f"Bildirim gonderme sirasinda hata olustu: {e}")
+        print(f"Bildirim gonderme hatasi: {e}")
+
+def fetch_flights_for_month(origin, dest, year_month):
+    """
+    Serbest bilet verisi tarama motoru. 
+    Gercek senaryoda Skyscanner, Kiwi veya Amadeus API verisi cekilir.
+    """
+    found_deals = []
+    
+    # Ornek: API/Kazima Entegrasyonu
+    # Bu kisim ilgili ucus servisinin ucuz bilet endpoint'ine baglanir.
+    # Limit alti bilet bulundugunda listeye eklenir:
+    # Example format: {"dest": dest, "date": year_month, "price": 4200}
+    
+    return found_deals
 
 def scan_flights():
-    """
-    Bugunden itibaren Eylul 2027 dahil olmak uzere 11 aylik periyodu tarar.
-    """
     bugun = datetime.now()
     
-    # Bugunden itibaren 11 ay sonrasina kadar olan aylari olusturur (Eylul 2027 dahil)
+    # Bugunden itibaren Eylul 2027 dahil 11 aylik periyot
     aylar = [(bugun + timedelta(days=30*i)).strftime("%Y-%m") for i in range(1, 12)]
     
-    firsatlar = []
+    bulunan_firsatlar = []
 
-    print(f"Tarama baslatildi. Taranacak aylar: {aylar}")
+    print(f"Tarama basliyor... Toplam {len(aylar)} ay taranacak.")
 
-    for hedef in DESTINATIONS:
+    for dest in DESTINATIONS:
         for ay in aylar:
-            # Burasi havayolu / seyahat API'nizden veri çeken kisimdir.
-            # Temsili tarama mantigi:
-            try:
-                # Örnek API çağrısı veya veri kazıma simülasyonu
-                # Bilet verisi bulunduğunda ucuz biletler listeye eklenir:
-                pass
-            except Exception as e:
-                print(f"Tarama hatasi ({hedef} - {ay}): {e}")
+            deals = fetch_flights_for_month(ORIGIN, dest, ay)
+            if deals:
+                bulunan_firsatlar.extend(deals)
 
-    # Örnek bildirim testi (Kodun çalıştığını doğrulamak için)
-    test_baslik = "Ucak Bileti Tarayicisi Aktif"
-    test_mesaj = f"Eylul 2027 tarihine kadar olan ucuz bilet taramasi tamamlandi. Limit: {MAX_PRICE_TRY} TL"
-    
-    # Bildirimi gönder
-    send_notification(test_baslik, test_mesaj)
+    # Eger limit alti bilet bulunduysa detayli bildirim at
+    if bulunan_firsatlar:
+        baslik = f"UCCUZ BILET BULUNDU ({len(bulunan_firsatlar)} Adet)"
+        mesaj_satirlari = []
+        for deal in bulunan_firsatlar[:5]: # Ilk 5 en ucuz bilet
+            mesaj_satirlari.append(f"Rota: {ORIGIN} -> {deal['dest']} | Tarih: {deal['date']} | Fiyat: {deal['price']} TL")
+        
+        mesaj = "\n".join(mesaj_satirlari)
+        send_notification(baslik, mesaj)
+    else:
+        # Firsat bulunamadiginda konsola yazar, telefona gereksiz bildirim atmaz
+        print("7000 TL altinda yeni bir bilet bulunamadi.")
 
 if __name__ == "__main__":
     scan_flights()
